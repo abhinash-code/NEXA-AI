@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXA</title>
+<link rel="icon" type="image/svg+xml" href="nexa-logo.svg">
+
+
+    <style>
+        /* ============================================
+           CSS VARIABLES & THEME SYSTEM
+           ============================================ */
+        :root {
+            --bg-primary: #0a0e27;
+            --bg-secondary: #131829;
+            --bg-tertiary: #1a1f3a;
+            --text-primary: #e8edf4;
+            --text-secondary: #a0aec0;
+            --accent-primary: #00d9ff;
+            --accent-secondary: #7b2cbf;
+            --accent-tertiary: #ff006e;
+            --border-color: #2d3748;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --glass-bg: rgba(26, 31, 58, 0.7);
+            --glow-primary: 0 0 20px rgba(0, 217, 255, 0.3);
+            --glow-secondary: 0 0 20px rgba(123, 44, 191, 0.3);
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #f7fafc;
+            --bg-secondary: #edf2f7;
+            --bg-tertiary: #e2e8f0;
+            --text-primary: #1a202c;
+            --text-secondary: #4a5568;
+            --accent-primary: #0088cc;
+            --accent-secondary: #6b21a8;
+            --accent-tertiary: #db2777;
+            --border-color: #cbd5e0;
+            --glass-bg: rgba(255, 255, 255, 0.7);
+            --glow-primary: 0 0 10px rgba(0, 136, 204, 0.2);
+            --glow-secondary: 0 0 10px rgba(107, 33, 168, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* ============================================
+           HEADER
+           ============================================ */
+        .header {
+            background: var(--bg-secondary);
+            border-bottom: 2px solid var(--border-color);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 48px;
+            height: 48px;
+            filter: drop-shadow(var(--glow-primary));
+        }
+
+        .app-title {
+            font-size: 2rem;
+            font-weight: 800;
+            letter-spacing: 0.1em;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: var(--glow-primary);
+        }
+
+        .header-controls {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        /* ============================================
+           BUTTONS & CONTROLS
+           ============================================ */
+        .btn {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn:hover {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+            box-shadow: var(--glow-primary);
+        }
+
+        .btn-primary {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+        }
+
+        .btn-primary:hover {
+            box-shadow: var(--glow-primary);
+            transform: translateY(-2px);
+        }
+
+        .toggle-switch {
+            position: relative;
+            width: 60px;
+            height: 30px;
+            background: var(--bg-tertiary);
+            border-radius: 15px;
+            cursor: pointer;
+            border: 2px solid var(--border-color);
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active {
+            background: var(--accent-primary);
+            box-shadow: var(--glow-primary);
+        }
+
+        .toggle-switch::after {
+            content: '';
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s;
+        }
+
+        .toggle-switch.active::after {
+            left: 32px;
+        }
+
+        /* ============================================
+           LAYOUT
+           ============================================ */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 85px);
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 300px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border-color);
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .sidebar.collapsed {
+            width: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .right-panel {
+            width: 320px;
+            background: var(--bg-secondary);
+            border-left: 1px solid var(--border-color);
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .right-panel.collapsed {
+            width: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        /* ============================================
+           CHAT MESSAGES
+           ============================================ */
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 1rem;
+            max-width: 800px;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: var(--accent-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: var(--glow-primary);
+        }
+
+        .message.user .message-avatar {
+            background: var(--accent-secondary);
+            box-shadow: var(--glow-secondary);
+        }
+
+        .message-content {
+            background: var(--glass-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            max-width: 100%;
+        }
+
+        .message.user .message-content {
+            background: linear-gradient(135deg, var(--accent-secondary), var(--accent-tertiary));
+            color: white;
+        }
+
+        .message-badge {
+            display: inline-block;
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+        }
+
+        .badge-local {
+            background: var(--success);
+            color: white;
+        }
+
+        .badge-internet {
+            background: var(--accent-primary);
+            color: var(--bg-primary);
+        }
+
+        .badge-rule {
+            background: var(--accent-tertiary);
+            color: white;
+        }
+
+        code {
+            background: var(--bg-primary);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+        }
+
+        pre {
+            background: var(--bg-primary);
+            padding: 1rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 0.5rem 0;
+        }
+
+        /* ============================================
+           INPUT AREA
+           ============================================ */
+        .input-area {
+            padding: 1.5rem 2rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .input-wrapper {
+            display: flex;
+            gap: 1rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .input-field {
+            flex: 1;
+            background: var(--bg-tertiary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            color: var(--text-primary);
+            font-size: 1rem;
+            resize: none;
+            min-height: 50px;
+            max-height: 150px;
+            font-family: inherit;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: var(--glow-primary);
+        }
+
+        /* ============================================
+           SIDEBAR & PANELS
+           ============================================ */
+        .panel-section {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .panel-title {
+            font-size: 1rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--accent-primary);
+        }
+
+        .kb-entry {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem;
+            margin-bottom: 0.5rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .kb-entry:hover {
+            border-color: var(--accent-primary);
+            box-shadow: var(--glow-primary);
+        }
+
+        .kb-entry-title {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .kb-entry-tags {
+            display: flex;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.4rem;
+            background: var(--accent-secondary);
+            color: white;
+            border-radius: 4px;
+        }
+
+        /* ============================================
+           MODAL
+           ============================================ */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-primary);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.75rem;
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-input:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: var(--glow-primary);
+        }
+
+        /* ============================================
+           SCROLLBAR
+           ============================================ */
+        ::-webkit-scrollbar {
+            width: 10px;
+            height: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-secondary);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--accent-primary);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-secondary);
+        }
+
+        /* ============================================
+           UTILITY CLASSES
+           ============================================ */
+        .hidden {
+            display: none !important;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .mt-1 {
+            margin-top: 0.5rem;
+        }
+
+        .mb-1 {
+            margin-bottom: 0.5rem;
+        }
+
+        .flex {
+            display: flex;
+        }
+
+        .gap-1 {
+            gap: 0.5rem;
+        }
+
+        .items-center {
+            align-items: center;
+        }
+
+        .justify-between {
+            justify-content: space-between;
+        }
+
+        /* Loading spinner */
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid var(--border-color);
+            border-top-color: var(--accent-primary);
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <div class="header">
+        <div class="logo-section">
+            <svg class="logo" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <linearGradient id="logoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:#00d9ff;stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:#7b2cbf;stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+                <path d="M50 10 L90 30 L90 70 L50 90 L10 70 L10 30 Z" fill="url(#logoGrad)" stroke="none"/>
+                <path d="M30 35 L50 25 L70 35 L70 50 L50 60 L30 50 Z" fill="#0a0e27" opacity="0.8"/>
+                <circle cx="50" cy="45" r="8" fill="#00d9ff"/>
+            </svg>
+            <h1 class="app-title" id="appTitle">NEXA</h1>
+        </div>
+        <div class="header-controls">
+            <div class="flex items-center gap-1">
+                <span style="font-size: 0.875rem; color: var(--text-secondary);">Internet Mode</span>
+                <div class="toggle-switch" id="internetToggle" role="switch" aria-checked="false" tabindex="0"></div>
+            </div>
+            <button class="btn" id="themeToggle" aria-label="Toggle theme">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="5"/>
+                    <line x1="12" y1="1" x2="12" y2="3"/>
+                    <line x1="12" y1="21" x2="12" y2="23"/>
+                    <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                    <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                    <line x1="1" y1="12" x2="3" y2="12"/>
+                    <line x1="21" y1="12" x2="23" y2="12"/>
+                    <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                    <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                </svg>
+            </button>
+            <button class="btn" id="toggleSidebar" aria-label="Toggle sidebar">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="12" x2="21" y2="12"/>
+                    <line x1="3" y1="6" x2="21" y2="6"/>
+                    <line x1="3" y1="18" x2="21" y2="18"/>
+                </svg>
+            </button>
+        </div>
+    </div>
+
+    <!-- MAIN CONTAINER -->
+    <div class="main-container">
+        <!-- LEFT SIDEBAR -->
+        <div class="sidebar" id="sidebar">
+            <div class="panel-section">
+                <div class="panel-title">Knowledge Base</div>
+                <button class="btn btn-primary" style="width: 100%; margin-bottom: 1rem;" id="addKnowledgeBtn">
+                    Add Entry
+                </button>
+                <div id="kbList"></div>
+            </div>
+        </div>
+
+        <!-- CHAT AREA -->
+        <div class="chat-area">
+            <div class="messages-container" id="messagesContainer"></div>
+            <div class="input-area">
+                <div class="input-wrapper">
+                    <textarea 
+                        class="input-field" 
+                        id="userInput" 
+                        placeholder="Ask me anything..."
+                        rows="1"
+                        aria-label="Message input"></textarea>
+                    <button class="btn btn-primary" id="sendBtn" aria-label="Send message">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="22" y1="2" x2="11" y2="13"/>
+                            <polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                        </svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT PANEL -->
+        <div class="right-panel" id="rightPanel">
+            <div class="panel-section">
+                <div class="panel-title">Session Controls</div>
+                <button class="btn" style="width: 100%; margin-bottom: 0.5rem;" id="clearChatBtn">Clear Chat</button>
+                <button class="btn" style="width: 100%; margin-bottom: 0.5rem;" id="exportKbBtn">Export KB</button>
+                <button class="btn" style="width: 100%;" id="importKbBtn">Import KB</button>
+                <input type="file" id="importFileInput" accept=".json" class="hidden">
+            </div>
+            
+            <div class="panel-section">
+                <div class="panel-title">Rules Engine</div>
+                <p style="font-size: 0.875rem; color: var(--text-secondary);">
+                    Active rules: Math, Unit Conversion, Code Snippets
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL FOR ADDING/EDITING KNOWLEDGE -->
+    <div class="modal" id="knowledgeModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Add Knowledge Entry</h2>
+                <button class="close-btn" id="closeModalBtn">&times;</button>
+            </div>
+            <form id="knowledgeForm">
+                <div class="form-group">
+                    <label class="form-label" for="entryTitle">Title</label>
+                    <input type="text" class="form-input" id="entryTitle" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="entryPatterns">Patterns (one per line)</label>
+                    <textarea class="form-textarea" id="entryPatterns" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="entryAnswer">Answer (HTML allowed)</label>
+                    <textarea class="form-textarea" id="entryAnswer" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="entryTags">Tags (comma separated)</label>
+                    <input type="text" class="form-input" id="entryTags">
+                </div>
+                <button type="submit" class="btn btn-primary" style="width: 100%;">Save Entry</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // CONFIGURATION & CONSTANTS
+        // ============================================
+        const AI_NAME = "NEXA";
+        
+        const CONFIG = {
+            maxMessages: 200,
+            dbName: 'nexaDB',
+            dbVersion: 1,
+            storeName: 'knowledge',
+            theme: localStorage.getItem('theme') || 'dark',
+            internetMode: false
+        };
+
+        // ============================================
+        // STATE MANAGEMENT
+        // ============================================
+        const STATE = {
+            db: null,
+            messages: [],
+            knowledgeBase: [],
+            currentTheme: CONFIG.theme,
+            internetMode: CONFIG.internetMode,
+            sidebarCollapsed: false,
+            rightPanelCollapsed: false
+        };
+
+        // ============================================
+        // INDEXED DB INITIALIZATION
+        // ============================================
+        async function initIndexedDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open(CONFIG.dbName, CONFIG.dbVersion);
+                
+                request.onerror = () => reject(request.error);
+                request.onsuccess = () => {
+                    STATE.db = request.result;
+                    resolve(request.result);
+                };
+                
+                request.onupgradeneeded = (event) => {
+                    const db = event.target.result;
+                    if (!db.objectStoreNames.contains(CONFIG.storeName)) {
+                        const objectStore = db.createObjectStore(CONFIG.storeName, { keyPath: 'id', autoIncrement: true });
+                        objectStore.createIndex('tags', 'tags', { unique: false, multiEntry: true });
+                        objectStore.createIndex('priority', 'priority', { unique: false });
+                    }
+                };
+            });
+        }
+
+        // ============================================
+        // KNOWLEDGE BASE MANAGEMENT
+        // ============================================
+        async function loadKnowledgeBase() {
+            if (!STATE.db) return;
+            
+            return new Promise((resolve, reject) => {
+                const transaction = STATE.db.transaction([CONFIG.storeName], 'readonly');
+                const objectStore = transaction.objectStore(CONFIG.storeName);
+                const request = objectStore.getAll();
+                
+                request.onsuccess = () => {
+                    STATE.knowledgeBase = request.result;
+                    if (STATE.knowledgeBase.length === 0) {
+                        seedKnowledgeBase().then(resolve);
+                    } else {
+                        resolve(request.result);
+                    }
+                };
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function saveKnowledgeEntry(entry) {
+            if (!STATE.db) return;
+            
+            return new Promise((resolve, reject) => {
+                const transaction = STATE.db.transaction([CONFIG.storeName], 'readwrite');
+                const objectStore = transaction.objectStore(CONFIG.storeName);
+                const request = entry.id ? objectStore.put(entry) : objectStore.add(entry);
+                
+                request.onsuccess = () => {
+                    loadKnowledgeBase().then(() => {
+                        renderKnowledgeList();
+                        resolve(request.result);
+                    });
+                };
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        async function deleteKnowledgeEntry(id) {
+            if (!STATE.db) return;
+            
+            return new Promise((resolve, reject) => {
+                const transaction = STATE.db.transaction([CONFIG.storeName], 'readwrite');
+                const objectStore = transaction.objectStore(CONFIG.storeName);
+                const request = objectStore.delete(id);
+                
+                request.onsuccess = () => {
+                    loadKnowledgeBase().then(() => {
+                        renderKnowledgeList();
+                        resolve();
+                    });
+                };
+                request.onerror = () => reject(request.error);
+            });
+        }
+
+        // ============================================
+        // SEED DATA (80+ ENTRIES)
+        // ============================================
+        async function seedKnowledgeBase() {
+            const seedData = [
+                // General Knowledge
+                { title: "Async Await", patterns: ["async await", "javascript async"], answerHTML: "<pre>async function getData() {\n  try {\n    const res = await fetch('api/data');\n    const data = await res.json();\n    return data;\n  } catch(err) {\n    console.error(err);\n  }\n}</pre>", tags: ["javascript", "code", "async"], priority: 8 },
+                
+                // CSS Tips
+                { title: "Flexbox Center", patterns: ["css center", "flexbox center"], answerHTML: "<pre>.container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}</pre>", tags: ["css", "code"], priority: 8 },
+                { title: "Grid Layout", patterns: ["css grid", "grid layout"], answerHTML: "<pre>.grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  gap: 1rem;\n}</pre>", tags: ["css", "code"], priority: 8 },
+                { title: "CSS Variables", patterns: ["css variables", "css custom properties"], answerHTML: "<pre>:root {\n  --primary: #00d9ff;\n  --spacing: 1rem;\n}\n\n.element {\n  color: var(--primary);\n  padding: var(--spacing);\n}</pre>", tags: ["css", "code"], priority: 8 },
+                { title: "Media Query", patterns: ["css media query", "responsive css"], answerHTML: "<pre>@media (max-width: 768px) {\n  .container {\n    flex-direction: column;\n  }\n}</pre>", tags: ["css", "code"], priority: 8 },
+                
+                // Unit Conversions
+                { title: "Kilometers to Miles", patterns: ["km to miles", "kilometers to miles"], answerHTML: "1 kilometer = 0.621371 miles<br>Formula: miles = km × 0.621371", tags: ["conversion", "units"], priority: 7 },
+                { title: "Celsius to Fahrenheit", patterns: ["celsius to fahrenheit", "c to f"], answerHTML: "Formula: °F = (°C × 9/5) + 32<br>Example: 0°C = 32°F, 100°C = 212°F", tags: ["conversion", "temperature"], priority: 7 },
+                { title: "Pounds to Kilograms", patterns: ["pounds to kg", "lbs to kg"], answerHTML: "1 pound = 0.453592 kilograms<br>Formula: kg = lbs × 0.453592", tags: ["conversion", "weight"], priority: 7 },
+                { title: "Inches to Centimeters", patterns: ["inches to cm", "in to cm"], answerHTML: "1 inch = 2.54 centimeters<br>Formula: cm = inches × 2.54", tags: ["conversion", "length"], priority: 7 },
+                
+                // Programming Concepts
+                { title: "Big O Notation", patterns: ["big o notation", "time complexity"], answerHTML: "<strong>Big O Notation</strong> describes algorithm performance:<br>O(1) - Constant<br>O(log n) - Logarithmic<br>O(n) - Linear<br>O(n log n) - Linearithmic<br>O(n²) - Quadratic<br>O(2ⁿ) - Exponential", tags: ["algorithms", "theory"], priority: 8 },
+                { title: "REST API", patterns: ["what is rest", "rest api"], answerHTML: "<strong>REST (Representational State Transfer)</strong> is an architectural style for APIs using HTTP methods:<br>GET - Retrieve<br>POST - Create<br>PUT - Update<br>DELETE - Remove<br>PATCH - Partial update", tags: ["web", "api"], priority: 8 },
+                { title: "SQL vs NoSQL", patterns: ["sql vs nosql", "difference between sql nosql"], answerHTML: "<strong>SQL:</strong> Structured, relational, ACID compliant (MySQL, PostgreSQL)<br><strong>NoSQL:</strong> Flexible schema, scalable, document/key-value based (MongoDB, Redis)", tags: ["database"], priority: 8 },
+                { title: "Git Commands", patterns: ["git commands", "basic git"], answerHTML: "<pre>git init - Initialize repo\ngit add . - Stage changes\ngit commit -m 'msg' - Commit\ngit push - Push to remote\ngit pull - Pull from remote\ngit branch - List branches</pre>", tags: ["git", "tools"], priority: 8 },
+                
+                // Web Technologies
+                { title: "What is API", patterns: ["what is api", "api meaning"], answerHTML: "<strong>API (Application Programming Interface)</strong> is a set of protocols and tools for building software. It defines how software components should interact.", tags: ["web", "programming"], priority: 9 },
+                { title: "What is JSON", patterns: ["what is json", "json format"], answerHTML: "<strong>JSON (JavaScript Object Notation)</strong> is a lightweight data format. Example:<br><code>{\"name\": \"John\", \"age\": 30, \"city\": \"NYC\"}</code>", tags: ["web", "data"], priority: 9 },
+                { title: "HTTP Status Codes", patterns: ["http status codes", "http codes"], answerHTML: "200 - OK<br>201 - Created<br>400 - Bad Request<br>401 - Unauthorized<br>404 - Not Found<br>500 - Server Error", tags: ["web", "http"], priority: 8 },
+                { title: "CORS", patterns: ["what is cors", "cors error"], answerHTML: "<strong>CORS (Cross-Origin Resource Sharing)</strong> is a security feature that restricts web pages from making requests to a different domain. Servers must explicitly allow cross-origin requests.", tags: ["web", "security"], priority: 8 },
+                
+                // Data Structures
+                { title: "Array", patterns: ["what is array", "array data structure"], answerHTML: "<strong>Array</strong> is an ordered collection of elements. Access by index is O(1). Insertion/deletion at end is O(1), at beginning is O(n).", tags: ["data-structures"], priority: 8 },
+                { title: "Linked List", patterns: ["linked list", "what is linked list"], answerHTML: "<strong>Linked List</strong> is a linear data structure where elements are connected via pointers. Insertion/deletion is O(1) if you have reference, access is O(n).", tags: ["data-structures"], priority: 8 },
+                { title: "Stack", patterns: ["stack data structure", "what is stack"], answerHTML: "<strong>Stack</strong> is a LIFO (Last In First Out) structure. Operations: push(), pop(), peek(). All O(1).", tags: ["data-structures"], priority: 8 },
+                { title: "Queue", patterns: ["queue data structure", "what is queue"], answerHTML: "<strong>Queue</strong> is a FIFO (First In First Out) structure. Operations: enqueue(), dequeue(). All O(1).", tags: ["data-structures"], priority: 8 },
+                { title: "Hash Table", patterns: ["hash table", "hash map"], answerHTML: "<strong>Hash Table</strong> stores key-value pairs. Average O(1) for insert, delete, and search. Uses hash function to compute index.", tags: ["data-structures"], priority: 8 },
+                { title: "Binary Tree", patterns: ["binary tree", "tree data structure"], answerHTML: "<strong>Binary Tree</strong> is a hierarchical structure where each node has at most 2 children. BST provides O(log n) search when balanced.", tags: ["data-structures"], priority: 8 },
+                
+                // Algorithms
+                { title: "Binary Search", patterns: ["binary search", "binary search algorithm"], answerHTML: "<strong>Binary Search</strong> finds an element in a sorted array in O(log n) time by repeatedly dividing the search interval in half.", tags: ["algorithms"], priority: 8 },
+                { title: "Quick Sort", patterns: ["quick sort", "quicksort algorithm"], answerHTML: "<strong>Quick Sort</strong> is a divide-and-conquer algorithm. Average O(n log n), worst O(n²). Uses pivot to partition array.", tags: ["algorithms", "sorting"], priority: 8 },
+                { title: "Merge Sort", patterns: ["merge sort", "mergesort algorithm"], answerHTML: "<strong>Merge Sort</strong> divides array into halves, sorts them, and merges. Always O(n log n) time, O(n) space.", tags: ["algorithms", "sorting"], priority: 8 },
+                { title: "Bubble Sort", patterns: ["bubble sort"], answerHTML: "<strong>Bubble Sort</strong> repeatedly swaps adjacent elements if they're in wrong order. O(n²) time complexity. Simple but inefficient.", tags: ["algorithms", "sorting"], priority: 7 },
+                
+                // Security
+                { title: "What is HTTPS", patterns: ["what is https", "https meaning"], answerHTML: "<strong>HTTPS (HTTP Secure)</strong> is the secure version of HTTP. It uses TLS/SSL to encrypt data between client and server.", tags: ["web", "security"], priority: 9 },
+                { title: "JWT", patterns: ["what is jwt", "json web token"], answerHTML: "<strong>JWT (JSON Web Token)</strong> is a compact token format for secure information transmission. Structure: header.payload.signature", tags: ["security", "authentication"], priority: 8 },
+                { title: "OAuth", patterns: ["what is oauth", "oauth authentication"], answerHTML: "<strong>OAuth</strong> is an authorization framework that enables applications to obtain limited access to user accounts. Used for \"Login with Google/Facebook\".", tags: ["security", "authentication"], priority: 8 },
+                { title: "XSS Attack", patterns: ["xss attack", "cross site scripting"], answerHTML: "<strong>XSS (Cross-Site Scripting)</strong> is a security vulnerability where attackers inject malicious scripts. Prevent by sanitizing user input and using Content Security Policy.", tags: ["security"], priority: 8 },
+                
+                // Cloud & DevOps
+                { title: "What is Docker", patterns: ["what is docker", "docker containers"], answerHTML: "<strong>Docker</strong> is a platform for developing, shipping, and running applications in containers. Containers are lightweight, portable, and include everything needed to run an application.", tags: ["devops", "tools"], priority: 8 },
+                { title: "CI/CD", patterns: ["what is ci cd", "cicd pipeline"], answerHTML: "<strong>CI/CD (Continuous Integration/Continuous Deployment)</strong> automates software delivery. CI merges code frequently, CD automates deployment to production.", tags: ["devops"], priority: 8 },
+                { title: "Kubernetes", patterns: ["what is kubernetes", "k8s"], answerHTML: "<strong>Kubernetes (K8s)</strong> is an open-source container orchestration platform for automating deployment, scaling, and management of containerized applications.", tags: ["devops", "cloud"], priority: 8 },
+                
+                // Frontend Frameworks
+                { title: "Vue.js", patterns: ["what is vue", "vuejs"], answerHTML: "<strong>Vue.js</strong> is a progressive JavaScript framework for building user interfaces. It's approachable, versatile, and performant.", tags: ["web", "javascript", "frameworks"], priority: 8 },
+                { title: "Angular", patterns: ["what is angular", "angular framework"], answerHTML: "<strong>Angular</strong> is a TypeScript-based web application framework developed by Google. It provides a complete solution with routing, forms, HTTP client, and more.", tags: ["web", "javascript", "frameworks"], priority: 8 },
+                { title: "Svelte", patterns: ["what is svelte", "svelte framework"], answerHTML: "<strong>Svelte</strong> is a radical new approach to building UIs. Instead of using a virtual DOM, Svelte compiles components into efficient JavaScript at build time.", tags: ["web", "javascript", "frameworks"], priority: 8 },
+                
+                // Backend Technologies
+                { title: "Node.js", patterns: ["what is nodejs", "node js"], answerHTML: "<strong>Node.js</strong> is a JavaScript runtime built on Chrome's V8 engine. It enables server-side JavaScript execution and is known for non-blocking I/O.", tags: ["backend", "javascript"], priority: 9 },
+                { title: "Express.js", patterns: ["what is express", "expressjs"], answerHTML: "<strong>Express.js</strong> is a minimal and flexible Node.js web application framework providing robust features for web and mobile applications.", tags: ["backend", "javascript"], priority: 8 },
+                { title: "Django", patterns: ["what is django", "django framework"], answerHTML: "<strong>Django</strong> is a high-level Python web framework that encourages rapid development and clean design. Follows MTV (Model-Template-View) pattern.", tags: ["backend", "python"], priority: 8 },
+                { title: "Flask", patterns: ["what is flask", "flask framework"], answerHTML: "<strong>Flask</strong> is a lightweight Python web framework. It's minimalistic and gives developers flexibility in how they build applications.", tags: ["backend", "python"], priority: 8 },
+                
+                // Databases
+                { title: "MongoDB", patterns: ["what is mongodb", "mongodb database"], answerHTML: "<strong>MongoDB</strong> is a document-oriented NoSQL database. It stores data in flexible JSON-like documents and is highly scalable.", tags: ["database", "nosql"], priority: 8 },
+                { title: "PostgreSQL", patterns: ["what is postgresql", "postgres"], answerHTML: "<strong>PostgreSQL</strong> is a powerful open-source relational database. It supports advanced features like JSON, full-text search, and spatial data.", tags: ["database", "sql"], priority: 8 },
+                { title: "Redis", patterns: ["what is redis", "redis database"], answerHTML: "<strong>Redis</strong> is an in-memory data structure store used as database, cache, and message broker. It's extremely fast with sub-millisecond latency.", tags: ["database", "cache"], priority: 8 },
+                { title: "MySQL", patterns: ["what is mysql", "mysql database"], answerHTML: "<strong>MySQL</strong> is an open-source relational database management system. It's widely used for web applications and is known for reliability.", tags: ["database", "sql"], priority: 8 },
+                
+                // Testing
+                { title: "Unit Testing", patterns: ["unit testing", "what is unit test"], answerHTML: "<strong>Unit Testing</strong> tests individual components in isolation. Popular frameworks: Jest (JS), pytest (Python), JUnit (Java).", tags: ["testing"], priority: 8 },
+                { title: "Integration Testing", patterns: ["integration testing", "integration test"], answerHTML: "<strong>Integration Testing</strong> tests how different modules work together. Verifies interfaces between components.", tags: ["testing"], priority: 8 },
+                { title: "TDD", patterns: ["tdd", "test driven development"], answerHTML: "<strong>TDD (Test-Driven Development)</strong> is a practice where you write tests before code. Process: Write test → Write code → Refactor.", tags: ["testing", "methodology"], priority: 8 },
+                
+                // Design Patterns
+                { title: "Singleton Pattern", patterns: ["singleton pattern", "singleton design"], answerHTML: "<strong>Singleton Pattern</strong> ensures a class has only one instance and provides global access to it. Common in configuration management.", tags: ["design-patterns"], priority: 7 },
+                { title: "Observer Pattern", patterns: ["observer pattern", "observer design"], answerHTML: "<strong>Observer Pattern</strong> defines one-to-many dependency. When one object changes state, all dependents are notified. Used in event systems.", tags: ["design-patterns"], priority: 7 },
+                { title: "Factory Pattern", patterns: ["factory pattern", "factory design"], answerHTML: "<strong>Factory Pattern</strong> creates objects without specifying exact class. Useful when creation logic is complex or needs to be centralized.", tags: ["design-patterns"], priority: 7 },
+                
+                // Additional Web Concepts
+                { title: "WebSocket", patterns: ["what is websocket", "websocket protocol"], answerHTML: "<strong>WebSocket</strong> provides full-duplex communication over a single TCP connection. Enables real-time data transfer between client and server.", tags: ["web", "networking"], priority: 8 },
+                { title: "GraphQL", patterns: ["what is graphql", "graphql api"], answerHTML: "<strong>GraphQL</strong> is a query language for APIs. Clients specify exactly what data they need, preventing over-fetching and under-fetching.", tags: ["api", "web"], priority: 8 },
+                { title: "Responsive Design", patterns: ["responsive design", "mobile first"], answerHTML: "<strong>Responsive Design</strong> ensures websites work well on all devices. Uses fluid grids, flexible images, and media queries.", tags: ["web", "css"], priority: 8 },
+                { title: "PWA", patterns: ["pwa", "progressive web app"], answerHTML: "<strong>PWA (Progressive Web App)</strong> uses modern web capabilities to deliver app-like experiences. Features: offline support, push notifications, installable.", tags: ["web"], priority: 8 },
+                
+                // Performance
+                { title: "Lazy Loading", patterns: ["lazy loading", "lazy load images"], answerHTML: "<strong>Lazy Loading</strong> defers loading of non-critical resources. Images load when they enter viewport, improving initial page load time.", tags: ["performance", "web"], priority: 7 },
+                { title: "Code Splitting", patterns: ["code splitting", "webpack splitting"], answerHTML: "<strong>Code Splitting</strong> breaks your bundle into smaller chunks loaded on demand. Reduces initial load time in large applications.", tags: ["performance", "web"], priority: 7 },
+                { title: "Caching", patterns: ["web caching", "browser cache"], answerHTML: "<strong>Caching</strong> stores copies of files for faster access. Types: Browser cache, CDN cache, server-side cache (Redis).", tags: ["performance", "web"], priority: 7 },
+                
+                // Mobile Development
+                { title: "React Native", patterns: ["react native", "react native framework"], answerHTML: "<strong>React Native</strong> is a framework for building mobile apps using React. Write once, deploy to iOS and Android.", tags: ["mobile", "react"], priority: 8 },
+                { title: "Flutter", patterns: ["what is flutter", "flutter framework"], answerHTML: "<strong>Flutter</strong> is Google's UI toolkit for building natively compiled applications for mobile, web, and desktop from a single codebase using Dart.", tags: ["mobile"], priority: 8 },
+                
+                // Version Control
+                { title: "Git Merge vs Rebase", patterns: ["git merge vs rebase", "merge rebase difference"], answerHTML: "<strong>Merge:</strong> Combines branches, preserves history<br><strong>Rebase:</strong> Moves commits to new base, creates linear history<br>Use merge for public branches, rebase for private feature branches.", tags: ["git", "tools"], priority: 7 },
+                
+                // Miscellaneous
+                { title: "Regex Basics", patterns: ["regex", "regular expression"], answerHTML: "<strong>Regular Expressions</strong> for pattern matching:<br><code>\\d</code> - digit<br><code>\\w</code> - word char<br><code>\\s</code> - whitespace<br><code>+</code> - one or more<br><code>*</code> - zero or more<br><code>.</code> - any char", tags: ["tools", "programming"], priority: 7 },
+                { title: "ASCII vs Unicode", patterns: ["ascii vs unicode", "character encoding"], answerHTML: "<strong>ASCII:</strong> 7-bit encoding, 128 characters<br><strong>Unicode:</strong> Universal character set supporting all languages. UTF-8 is most common encoding.", tags: ["theory"], priority: 7 },
+                { title: "Synchronous vs Asynchronous", patterns: ["sync vs async", "synchronous asynchronous"], answerHTML: "<strong>Synchronous:</strong> Operations execute sequentially, blocking<br><strong>Asynchronous:</strong> Operations execute independently, non-blocking. JS uses callbacks, promises, async/await.", tags: ["programming", "theory"], priority: 8 },
+            ];
+
+            for (const entry of seedData) {
+                await saveKnowledgeEntry({
+                    ...entry,
+                    lastUpdated: Date.now()
+                });
+            }
+            
+            return loadKnowledgeBase();
+        }
+
+        // ============================================
+        // RULES ENGINE
+        // ============================================
+        const RULES = {
+            math: {
+                condition: (q) => /calculate|compute|sum|multiply|divide|subtract|add|\d+\s*[\+\-\*\/]\s*\d+/.test(q.toLowerCase()),
+                action: (q) => {
+                    try {
+                        // Extract math expression
+                        const match = q.match(/(\d+\.?\d*)\s*([\+\-\*\/])\s*(\d+\.?\d*)/);
+                        if (match) {
+                            const [, a, op, b] = match;
+                            const num1 = parseFloat(a);
+                            const num2 = parseFloat(b);
+                            let result;
+                            switch(op) {
+                                case '+': result = num1 + num2; break;
+                                case '-': result = num1 - num2; break;
+                                case '*': result = num1 * num2; break;
+                                case '/': result = num1 / num2; break;
+                            }
+                            return {
+                                answerHTML: `<strong>Result:</strong> ${result}`,
+                                confidence: 'high',
+                                matchedRule: 'math'
+                            };
+                        }
+                    } catch (e) {
+                        return null;
+                    }
+                    return null;
+                }
+            },
+            identity: {
+                condition: (q) => {
+                    const lower = q.toLowerCase().trim();
+                    return lower === 'what is your name' || 
+                           lower === 'what is your name?' ||
+                           lower === 'who are you' ||
+                           lower === 'who are you?' ||
+                           lower === 'tumhara naam kya hai' ||
+                           lower === 'tumhara naam kya hai?';
+                },
+                action: (q) => {
+                    return {
+                        answerHTML: `I am <strong>${AI_NAME}</strong> — a local, browser-based AI assistant. I provide instant answers from my knowledge base and can search the internet when needed.`,
+                        confidence: 'high',
+                        matchedRule: 'identity'
+                    };
+                }
+            },
+            conversion: {
+                condition: (q) => /convert|to (miles|km|celsius|fahrenheit|kg|lbs|pounds)/i.test(q),
+                action: (q) => {
+                    const lower = q.toLowerCase();
+                    if (lower.includes('celsius') && lower.includes('fahrenheit')) {
+                        return {
+                            answerHTML: "To convert Celsius to Fahrenheit: <code>°F = (°C × 9/5) + 32</code><br>To convert Fahrenheit to Celsius: <code>°C = (°F - 32) × 5/9</code>",
+                            confidence: 'high',
+                            matchedRule: 'conversion'
+                        };
+                    }
+                    return null;
+                }
+            }
+        };
+
+        // ============================================
+        // LOCAL ANSWER ENGINE
+        // ============================================
+        async function askLocal(question) {
+            const q = question.toLowerCase().trim();
+            
+            // Check rules first
+            for (const [name, rule] of Object.entries(RULES)) {
+                if (rule.condition(q)) {
+                    const result = rule.action(question);
+                    if (result) return result;
+                }
+            }
+            
+            // Check knowledge base
+            let bestMatch = null;
+            let highestScore = 0;
+            
+            for (const entry of STATE.knowledgeBase) {
+                for (const pattern of entry.patterns) {
+                    let score = 0;
+                    const patternLower = pattern.toLowerCase();
+                    
+                    // Exact match
+                    if (q === patternLower) {
+                        score = 100;
+                    }
+                    // Contains
+                    else if (q.includes(patternLower) || patternLower.includes(q)) {
+                        score = 70 + (entry.priority || 0);
+                    }
+                    // Fuzzy match
+                    else {
+                        const words = q.split(/\s+/);
+                        const patternWords = patternLower.split(/\s+/);
+                        const matchCount = words.filter(w => patternWords.some(pw => pw.includes(w) || w.includes(pw))).length;
+                        score = (matchCount / words.length) * 50;
+                    }
+                    
+                    if (score > highestScore) {
+                        highestScore = score;
+                        bestMatch = entry;
+                    }
+                }
+            }
+            
+            if (bestMatch && highestScore > 30) {
+                return {
+                    answerHTML: bestMatch.answerHTML,
+                    confidence: highestScore > 80 ? 'high' : 'medium',
+                    matchedRule: 'knowledge-base'
+                };
+            }
+            
+            return null;
+        }
+
+        // ============================================
+        // INTERNET MODE - ENHANCED WITH AUTO SEARCH
+        // ============================================
+        async function askInternet(query) {
+            if (!STATE.internetMode) {
+                return {
+                    answerHTML: '<strong>Internet Mode is OFF.</strong> Enable it to search the web for answers.',
+                    sources: []
+                };
+            }
+            
+            // Show searching indicator
+            renderMessage('system', '<div class="flex items-center gap-1"><div class="spinner"></div> Searching the internet...</div>');
+            
+            try {
+                // Try multiple search APIs
+                const results = await searchWeb(query);
+                
+                if (results && results.answer) {
+                    return {
+                        answerHTML: results.answer,
+                        sources: results.sources || []
+                    };
+                } else {
+                    // Fallback: open search tab
+                    const searchURL = `https://duckduckgo.com/?q=${encodeURIComponent(query)}`;
+                    window.open(searchURL, '_blank');
+                    return {
+                        answerHTML: `<strong>Search completed!</strong><br><br>I've opened results in a new tab for: "${query}"<br><br>Due to CORS restrictions, some searches need manual review. The new tab has your results.`,
+                        sources: [searchURL]
+                    };
+                }
+            } catch (error) {
+                console.error('Search error:', error);
+                return {
+                    answerHTML: `<strong>Search attempt failed.</strong><br><br>Error: ${error.message}<br><br>Try rephrasing your question or check your internet connection.`,
+                    sources: []
+                };
+            }
+        }
+
+        async function searchWeb(query) {
+            // Try DuckDuckGo Instant Answer API (CORS-friendly)
+            try {
+                const ddgUrl = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_html=1&skip_disambig=1`;
+                const response = await fetch(ddgUrl);
+                const data = await response.json();
+                
+                if (data.AbstractText) {
+                    return {
+                        answer: `<strong>Answer:</strong><br><br>${data.AbstractText}<br><br>${data.AbstractURL ? `<small>Source: <a href="${data.AbstractURL}" target="_blank">${data.AbstractURL}</a></small>` : ''}`,
+                        sources: [data.AbstractURL].filter(Boolean)
+                    };
+                }
+                
+                if (data.RelatedTopics && data.RelatedTopics.length > 0) {
+                    const topics = data.RelatedTopics.slice(0, 3)
+                        .filter(t => t.Text)
+                        .map(t => `• ${t.Text}`)
+                        .join('<br>');
+                    
+                    if (topics) {
+                        return {
+                            answer: `<strong>Related information:</strong><br><br>${topics}`,
+                            sources: []
+                        };
+                    }
+                }
+            } catch (e) {
+                console.log('DuckDuckGo API failed:', e);
+            }
+            
+            // Try Wikipedia API (CORS-friendly)
+            try {
+                const wikiUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
+                const response = await fetch(wikiUrl);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.extract) {
+                        return {
+                            answer: `<strong>${data.title}</strong><br><br>${data.extract}<br><br><small>Source: <a href="${data.content_urls.desktop.page}" target="_blank">Wikipedia</a></small>`,
+                            sources: [data.content_urls.desktop.page]
+                        };
+                    }
+                }
+            } catch (e) {
+                console.log('Wikipedia API failed:', e);
+            }
+            
+            // Try free APIs for specific queries
+            if (query.toLowerCase().includes('weather')) {
+                return await getWeatherInfo(query);
+            }
+            
+            if (query.toLowerCase().match(/price|stock|ticker/)) {
+                return await getStockInfo(query);
+            }
+            
+            return null;
+        }
+
+        async function getWeatherInfo(query) {
+            // Extract city name
+            const cityMatch = query.match(/weather\s+(?:in|for|at)?\s*([a-zA-Z\s]+)/i);
+            if (cityMatch) {
+                const city = cityMatch[1].trim();
+                return {
+                    answer: `<strong>Weather information</strong><br><br>For real-time weather data for "${city}", I recommend checking:<br>• <a href="https://weather.com" target="_blank">Weather.com</a><br>• <a href="https://openweathermap.org" target="_blank">OpenWeatherMap</a><br><br><small>Note: Live weather APIs require API keys. Opening weather.com in new tab...</small>`,
+                    sources: [`https://weather.com/weather/today/l/${encodeURIComponent(city)}`]
+                };
+            }
+            return null;
+        }
+
+        async function getStockInfo(query) {
+            return {
+                answer: `<strong>Stock information</strong><br><br>For real-time stock prices and market data, visit:<br>• <a href="https://finance.yahoo.com" target="_blank">Yahoo Finance</a><br>• <a href="https://www.google.com/finance" target="_blank">Google Finance</a><br><br><small>Note: Live stock APIs require authentication. Check the links above for current data.</small>`,
+                sources: ['https://finance.yahoo.com']
+            };
+        }
+
+        function openSearchTab(url) {
+            window.open(url, '_blank');
+        }
+
+        // ============================================
+        // UI RENDERING
+        // ============================================
+        function renderMessage(role, html, badge = null) {
+            const container = document.getElementById('messagesContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}`;
+            
+            const avatarSvg = role === 'user' 
+                ? '<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>'
+                : '<svg width="24" height="24" viewBox="0 0 24 24" fill="white"><circle cx="12" cy="12" r="3"/><path d="M12 2L2 7v10c0 5.5 3.8 10.7 10 12 6.2-1.3 10-6.5 10-12V7l-10-5z" fill="none" stroke="white" stroke-width="2"/></svg>';
+            
+            messageDiv.innerHTML = `
+                <div class="message-avatar">${avatarSvg}</div>
+                <div class="message-content">
+                    ${badge ? `<div class="message-badge badge-${badge}">${badge.toUpperCase()}</div>` : ''}
+                    ${html}
+                </div>
+            `;
+            
+            container.appendChild(messageDiv);
+            container.scrollTop = container.scrollHeight;
+            
+            STATE.messages.push({ role, html, badge, timestamp: Date.now() });
+            
+            // Keep only last N messages in DOM
+            if (STATE.messages.length > CONFIG.maxMessages) {
+                STATE.messages.shift();
+                container.removeChild(container.firstChild);
+            }
+        }
+
+        function renderKnowledgeList() {
+            const list = document.getElementById('kbList');
+            if (!list) return;
+            
+            list.innerHTML = '';
+            
+            // Show first 20 entries
+            const entries = STATE.knowledgeBase.slice(0, 20);
+            
+            entries.forEach(entry => {
+                const div = document.createElement('div');
+                div.className = 'kb-entry';
+                div.innerHTML = `
+                    <div class="kb-entry-title">${entry.title}</div>
+                    <div class="kb-entry-tags">
+                        ${entry.tags ? entry.tags.map(tag => `<span class="tag">${tag}</span>`).join('') : ''}
+                    </div>
+                `;
+                div.onclick = () => {
+                    document.getElementById('userInput').value = entry.patterns[0];
+                    document.getElementById('userInput').focus();
+                };
+                list.appendChild(div);
+            });
+            
+            if (STATE.knowledgeBase.length > 20) {
+                const more = document.createElement('div');
+                more.style.cssText = 'text-align: center; padding: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;';
+                more.textContent = `+${STATE.knowledgeBase.length - 20} more entries`;
+                list.appendChild(more);
+            }
+        }
+
+        // ============================================
+        // EVENT HANDLERS
+        // ============================================
+        async function handleSendMessage() {
+            const input = document.getElementById('userInput');
+            const question = input.value.trim();
+            
+            if (!question) return;
+            
+            input.value = '';
+            input.style.height = 'auto';
+            
+            // Render user message
+            renderMessage('user', question);
+            
+            // Try local first
+            const localResult = await askLocal(question);
+            
+            if (localResult) {
+                const badge = localResult.matchedRule === 'knowledge-base' ? 'local' : 'rule';
+                renderMessage('assistant', localResult.answerHTML, badge);
+            } else {
+                // Try internet if enabled
+                if (STATE.internetMode) {
+                    const internetResult = await askInternet(question);
+                    
+                    // Remove "searching" message if it exists
+                    const container = document.getElementById('messagesContainer');
+                    const lastMsg = container.lastChild;
+                    if (lastMsg && lastMsg.querySelector('.spinner')) {
+                        container.removeChild(lastMsg);
+                        STATE.messages.pop();
+                    }
+                    
+                    renderMessage('assistant', internetResult.answerHTML, 'internet');
+                } else {
+                    renderMessage('assistant', '<strong>No local answer found.</strong><br><br>Enable <strong>Internet Mode</strong> to search the web for this query, or try rephrasing your question.');
+                }
+            }
+        }
+
+        function toggleTheme() {
+            STATE.currentTheme = STATE.currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', STATE.currentTheme);
+            localStorage.setItem('theme', STATE.currentTheme);
+        }
+
+        function toggleInternetMode() {
+            STATE.internetMode = !STATE.internetMode;
+            const toggle = document.getElementById('internetToggle');
+            toggle.classList.toggle('active');
+            toggle.setAttribute('aria-checked', STATE.internetMode);
+            
+            if (STATE.internetMode) {
+                renderMessage('system', '<strong>Internet Mode enabled.</strong> I can now open search tabs when needed. Note: CORS prevents automatic content fetching.');
+            } else {
+                renderMessage('system', '<strong>Internet Mode disabled.</strong> Answering from local knowledge only.');
+            }
+        }
+
+        function toggleSidebar() {
+            STATE.sidebarCollapsed = !STATE.sidebarCollapsed;
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        }
+
+        function clearChat() {
+            if (confirm('Clear all messages?')) {
+                STATE.messages = [];
+                document.getElementById('messagesContainer').innerHTML = '';
+                showWelcomeMessage();
+            }
+        }
+
+        function showWelcomeMessage() {
+            renderMessage('assistant', `I am <strong>${AI_NAME}</strong> — a local, browser-based AI assistant. Local answers are instant. Internet Mode is optional.`);
+        }
+
+        function exportKnowledge() {
+            const data = JSON.stringify(STATE.knowledgeBase, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${AI_NAME.toLowerCase()}-knowledge-${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        async function importKnowledge(jsonString) {
+            try {
+                const data = JSON.parse(jsonString);
+                if (!Array.isArray(data)) {
+                    alert('Invalid format: expected an array');
+                    return;
+                }
+                
+                for (const entry of data) {
+                    await saveKnowledgeEntry({
+                        ...entry,
+                        lastUpdated: Date.now()
+                    });
+                }
+                
+                alert(`Imported ${data.length} entries successfully`);
+            } catch (e) {
+                alert('Error importing: ' + e.message);
+            }
+        }
+
+        function openKnowledgeModal() {
+            document.getElementById('knowledgeModal').classList.add('active');
+            document.getElementById('knowledgeForm').reset();
+        }
+
+        function closeKnowledgeModal() {
+            document.getElementById('knowledgeModal').classList.remove('active');
+        }
+
+        async function handleKnowledgeSubmit(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('entryTitle').value.trim();
+            const patternsText = document.getElementById('entryPatterns').value.trim();
+            const answerHTML = document.getElementById('entryAnswer').value.trim();
+            const tagsText = document.getElementById('entryTags').value.trim();
+            
+            const patterns = patternsText.split('\n').map(p => p.trim()).filter(p => p);
+            const tags = tagsText.split(',').map(t => t.trim()).filter(t => t);
+            
+            await saveKnowledgeEntry({
+                title,
+                patterns,
+                answerHTML,
+                tags,
+                priority: 5,
+                lastUpdated: Date.now()
+            });
+            
+            closeKnowledgeModal();
+            renderMessage('system', `<strong>Knowledge entry added:</strong> ${title}`);
+        }
+
+        // ============================================
+        // KEYBOARD SHORTCUTS
+        // ============================================
+        function handleKeyboardShortcuts(e) {
+            // Ctrl/Cmd + K: Focus input
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('userInput').focus();
+            }
+            
+            // Ctrl/Cmd + Enter: Send message
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                handleSendMessage();
+            }
+            
+            // Escape: Close modal
+            if (e.key === 'Escape') {
+                closeKnowledgeModal();
+            }
+        }
+
+        // Auto-resize textarea
+        function handleTextareaInput(e) {
+            const textarea = e.target;
+            textarea.style.height = 'auto';
+            textarea.style.height = Math.min(textarea.scrollHeight, 150) + 'px';
+        }
+
+        // ============================================
+        // INITIALIZATION
+        // ============================================
+        async function init() {
+            // Set theme
+            document.documentElement.setAttribute('data-theme', STATE.currentTheme);
+            
+            // Initialize IndexedDB
+            try {
+                await initIndexedDB();
+                await loadKnowledgeBase();
+                renderKnowledgeList();
+            } catch (e) {
+                console.error('IndexedDB initialization failed:', e);
+                renderMessage('system', '<strong>Warning:</strong> Local storage initialization failed. Knowledge base may not persist.');
+            }
+            
+            // Show welcome message
+            showWelcomeMessage();
+            
+            // Attach event listeners
+            document.getElementById('sendBtn').addEventListener('click', handleSendMessage);
+            document.getElementById('userInput').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                }
+            });
+            document.getElementById('userInput').addEventListener('input', handleTextareaInput);
+            
+            document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+            document.getElementById('internetToggle').addEventListener('click', toggleInternetMode);
+            document.getElementById('toggleSidebar').addEventListener('click', toggleSidebar);
+            
+            document.getElementById('clearChatBtn').addEventListener('click', clearChat);
+            document.getElementById('exportKbBtn').addEventListener('click', exportKnowledge);
+            document.getElementById('importKbBtn').addEventListener('click', () => {
+                document.getElementById('importFileInput').click();
+            });
+            
+            document.getElementById('importFileInput').addEventListener('change', async (e) => {
+                const file = e.target.files[0];
+                if (file) {
+                    const text = await file.text();
+                    await importKnowledge(text);
+                }
+                e.target.value = '';
+            });
+            
+            document.getElementById('addKnowledgeBtn').addEventListener('click', openKnowledgeModal);
+            document.getElementById('closeModalBtn').addEventListener('click', closeKnowledgeModal);
+            document.getElementById('knowledgeForm').addEventListener('submit', handleKnowledgeSubmit);
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', handleKeyboardShortcuts);
+            
+            // Click outside modal to close
+            document.getElementById('knowledgeModal').addEventListener('click', (e) => {
+                if (e.target.id === 'knowledgeModal') {
+                    closeKnowledgeModal();
+                }
+            });
+            
+            // Accessibility: Toggle with keyboard
+            document.getElementById('internetToggle').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    toggleInternetMode();
+                }
+            });
+            
+            // Focus input on load
+            document.getElementById('userInput').focus();
+        }
+
+        // Start the application
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    </script>
+</body>
+</html> "What is CSS", patterns: ["what is css", "css meaning", "define css"], answerHTML: "<strong>CSS (Cascading Style Sheets)</strong> is a stylesheet language used to describe the presentation of HTML documents. It controls layout, colors, fonts, and responsive design.", tags: ["web", "css"], priority: 10 },
+                { title: "What is JavaScript", patterns: ["what is javascript", "javascript meaning", "define javascript"], answerHTML: "<strong>JavaScript</strong> is a high-level, interpreted programming language that enables interactive web pages. It's a core technology of the web alongside HTML and CSS.", tags: ["web", "javascript"], priority: 10 },
+                { title: "What is HTML", patterns: ["what is html", "html meaning", "define html"], answerHTML: "<strong>HTML (HyperText Markup Language)</strong> is the standard markup language for creating web pages. It describes the structure and content of documents.", tags: ["web", "html"], priority: 10 },
+                { title: "What is Python", patterns: ["what is python", "python language"], answerHTML: "<strong>Python</strong> is a high-level, interpreted programming language known for its clear syntax and readability. It's widely used in web development, data science, AI, and automation.", tags: ["programming", "python"], priority: 10 },
+                { title: "What is React", patterns: ["what is react", "reactjs"], answerHTML: "<strong>React</strong> is a JavaScript library for building user interfaces, maintained by Meta. It uses a component-based architecture and virtual DOM for efficient rendering.", tags: ["web", "javascript", "react"], priority: 10 },
+                
+                // JavaScript Snippets
+                { title: "Array Map", patterns: ["javascript map", "array map", "js map function"], answerHTML: "<code>const doubled = [1,2,3].map(x => x * 2); // [2,4,6]</code><br>The map() method creates a new array with the results of calling a function for every array element.", tags: ["javascript", "code"], priority: 8 },
+                { title: "Array Filter", patterns: ["javascript filter", "array filter"], answerHTML: "<code>const evens = [1,2,3,4].filter(x => x % 2 === 0); // [2,4]</code><br>The filter() method creates a new array with elements that pass a test.", tags: ["javascript", "code"], priority: 8 },
+                { title: "Array Reduce", patterns: ["javascript reduce", "array reduce"], answerHTML: "<code>const sum = [1,2,3].reduce((a,b) => a + b, 0); // 6</code><br>The reduce() method reduces an array to a single value.", tags: ["javascript", "code"], priority: 8 },
+                { title: "Promise Example", patterns: ["javascript promise", "promise example"], answerHTML: "<pre>fetch('api/data')\n  .then(res => res.json())\n  .then(data => console.log(data))\n  .catch(err => console.error(err));</pre>", tags: ["javascript", "code", "async"], priority: 8 },
+                { title:
