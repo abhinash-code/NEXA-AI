@@ -1,0 +1,86 @@
+/* RESPONSIVE FIX — ensure base elements size and overflow are mobile-safe */
+html, body {
+    box-sizing: border-box;
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+/* RESPONSIVE FIX — make media elements scale within containers */
+img, video, iframe {
+    max-width: 100%;
+    height: auto;
+}
+
+/* RESPONSIVE FIX — wrap header items on narrow screens */
+@media (max-width: 768px) {
+    .header {
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+    .logo-section {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .header-controls {
+        width: 100%;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+    }
+}
+
+/* RESPONSIVE FIX — stack main layout vertically on tablets/phones */
+@media (max-width: 768px) {
+    .main-container {
+        flex-direction: column;
+        height: auto;
+    }
+    .sidebar,
+    .right-panel {
+        width: 100%;
+        border-left: none;
+        border-right: none;
+    }
+    .chat-area {
+        min-height: 60vh;
+    }
+}
+
+/* RESPONSIVE FIX — allow comfortable message viewing on small screens */
+@media (max-width: 768px) {
+    body {
+        height: auto;
+        overflow-y: auto;
+    }
+    .messages-container {
+        padding: 1rem;
+    }
+}
+
+/* RESPONSIVE FIX — let input area adapt to narrow widths */
+@media (max-width: 768px) {
+    .input-area {
+        padding: 1rem;
+    }
+    .input-wrapper {
+        flex-direction: column;
+        width: 100%;
+    }
+    .btn {
+        justify-content: center;
+    }
+}
+
+/* RESPONSIVE FIX — tighten layout for small phones */
+@media (max-width: 480px) {
+    .header {
+        padding: 0.75rem 1rem;
+    }
+    .messages-container {
+        padding: 0.75rem;
+    }
+    .input-area {
+        padding: 0.75rem 1rem;
+    }
+}
+
