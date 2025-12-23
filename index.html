@@ -1,213 +1,463 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>NEXA</title>
-<title>NEXA</title>
-<link rel="icon" type="image/svg+xml" href="nexa-logo.svg">
-  <!-- Place `nexa-logo.svg` in the repo root to show as favicon in supporting browsers -->
-  <link rel="icon" type="image/svg+xml" href="nexa-logo.svg">
-  <style>
-    :root{
-      --bg:#070710;
-      --card:#0f1724;
-      --accent1:#00FFC6;
-      --accent2:#4C9AFF;
-      --muted:rgba(255,255,255,0.75);
-      --glass: rgba(255,255,255,0.03);
-      --radius:14px;
-      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
-    }
-    html,body{height:100%;margin:0;background:var(--bg);color:white}
-    /* canvas full-bleed background */
-    #bg-canvas{position:fixed;inset:0;z-index:0}
-    .page{
-      position:relative;z-index:10;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:48px;
-    }
-    .card{
-      width:min(980px,96%);background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-      border-radius:var(--radius);padding:36px;box-shadow:0 10px 30px rgba(2,6,23,0.6);backdrop-filter: blur(6px);
-      display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:center;
-    }
-    .brand{display:flex;align-items:center;gap:16px}
-    .brand svg{width:68px;height:68px}
-    h1{margin:0;font-size:28px;letter-spacing:0.4px}
-    p.lead{color:var(--muted);margin-top:8px;line-height:1.5}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXA | Intelligent Information</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="nexa-logo.svg">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
 
-    .features{margin-top:22px;display:flex;flex-direction:column;gap:10px}
-    .feature{background:var(--glass);padding:12px;border-radius:10px;color:var(--muted);font-size:14px}
+    <style>
+        :root {
+            --primary: #00FFC6;
+            --secondary: #4C9AFF;
+            --bg-dark: #050508;
+        }
 
-    .cta{display:flex;flex-direction:column;gap:12px;align-items:stretch}
-    .btn{
-      background:linear-gradient(90deg,var(--accent1),var(--accent2));border:none;padding:12px 16px;border-radius:10px;color:#021;cursor:pointer;font-weight:700;font-size:15px
-    }
-    .btn.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);font-weight:600}
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            color: white;
+            overflow-x: hidden;
+            /* Prevents horizontal scroll on small devices */
+            width: 100vw;
+        }
 
-    .meta{font-size:13px;color:var(--muted);margin-top:8px}
+        h1, h2, h3, .brand-font {
+            font-family: 'Orbitron', sans-serif;
+        }
 
-    /* responsive */
-    @media (max-width:880px){
-      .card{grid-template-columns:1fr;}
-      .brand svg{width:58px;height:58px}
-    }
+        /* Canvas Background */
+        #bg-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
 
-    footer{position:fixed;left:16px;bottom:12px;color:rgba(255,255,255,0.45);font-size:13px}
-  </style>
+        /* Glassmorphism Card */
+        .glass-card {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Gradient Text */
+        .text-gradient {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Button Glow Animation */
+        .btn-glow {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        .btn-glow::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: 0.5s;
+        }
+        .btn-glow:hover::after {
+            left: 100%;
+        }
+        .btn-glow:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 20px rgba(0, 255, 198, 0.4);
+        }
+
+        /* Glitch Effect on Hover for Logo */
+        .glitch-hover:hover {
+            animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite;
+            color: var(--primary);
+        }
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 2px) }
+            40% { transform: translate(-2px, -2px) }
+            60% { transform: translate(2px, 2px) }
+            80% { transform: translate(2px, -2px) }
+            100% { transform: translate(0) }
+        }
+
+        /* Intro Animation */
+        .fade-in-up {
+            animation: fadeInUp 0.8s ease-out forwards;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .delay-100 { animation-delay: 0.1s; }
+        .delay-200 { animation-delay: 0.2s; }
+        .delay-300 { animation-delay: 0.3s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
 </head>
-<body>
-  <!-- Animated background canvas -->
-  <canvas id="bg-canvas"></canvas>
+<body class="min-h-screen flex items-center justify-center p-4 md:p-8 lg:p-12 selection:bg-cyan-500 selection:text-black">
 
-  <main class="page">
-    <section class="card" role="main" aria-labelledby="nexa-title">
-      <div>
-        <div class="brand">
-          <!-- Inline SVG logo (display on page) - keep separate nexa-logo.svg for favicon -->
-          <svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-            <!-- abstract network core -->
-            <defs>
-              <radialGradient id="g1" cx="50%" cy="40%">
-                <stop offset="0%" stop-color="#00FFC6" stop-opacity="1"/>
-                <stop offset="70%" stop-color="#4C9AFF" stop-opacity="0.6"/>
-              </radialGradient>
-            </defs>
-            <circle cx="60" cy="60" r="36" fill="url(#g1)" opacity="0.95" />
-            <g stroke="#021" stroke-width="2" fill="none" opacity="0.12">
-              <circle cx="60" cy="60" r="52" />
-              <circle cx="60" cy="60" r="68" />
-            </g>
-            <!-- stylized N made of connected nodes -->
-            <circle cx="42" cy="48" r="4" fill="#021" opacity="0.9"/>
-            <circle cx="78" cy="36" r="4" fill="#021" opacity="0.9"/>
-            <circle cx="78" cy="84" r="4" fill="#021" opacity="0.9"/>
-            <path d="M42 48 L58 34 L78 36 L62 60 L78 84" stroke="#021" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.95"/>
-          </svg>
-          <div>
-            <h1 id="nexa-title">NEXA</h1>
-            <p class="lead">NEXA — An information assistant that fetches and synthesizes public web data to answer user questions. It does not proxy another AI model via API; instead it uses its own retrieval and processing logic to provide concise, sourced answers.</p>
-          </div>
+    <!-- Interactive Background -->
+    <canvas id="bg-canvas"></canvas>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-6xl z-10 relative">
+        
+        <div class="glass-card rounded-3xl p-6 md:p-12 lg:p-16 grid lg:grid-cols-2 gap-10 lg:gap-12 items-center relative overflow-hidden">
+            
+            <!-- Decorative gradient blobs -->
+            <div class="absolute top-0 right-0 w-64 h-64 md:w-96 md:h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-[80px] md:blur-[128px] opacity-20 animate-pulse"></div>
+            <div class="absolute bottom-0 left-0 w-64 h-64 md:w-96 md:h-96 bg-teal-400 rounded-full mix-blend-multiply filter blur-[80px] md:blur-[128px] opacity-10"></div>
+
+            <!-- Left Column: Content -->
+            <div class="flex flex-col gap-5 md:gap-6 relative z-10">
+                
+                <!-- Logo & Brand -->
+                <div class="flex items-center gap-3 md:gap-4 fade-in-up">
+                    <div class="relative group cursor-pointer">
+                        <div class="absolute -inset-1 bg-gradient-to-r from-teal-400 to-blue-600 rounded-full blur opacity-40 group-hover:opacity-100 transition duration-500"></div>
+                        <svg class="relative w-12 h-12 md:w-16 md:h-16 transform transition duration-500 group-hover:rotate-180" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <radialGradient id="g1" cx="50%" cy="40%">
+                                    <stop offset="0%" stop-color="#00FFC6" stop-opacity="1"/>
+                                    <stop offset="70%" stop-color="#4C9AFF" stop-opacity="0.8"/>
+                                </radialGradient>
+                            </defs>
+                            <circle cx="60" cy="60" r="36" fill="url(#g1)" opacity="0.95" />
+                            <g stroke="#fff" stroke-width="2" fill="none" opacity="0.4">
+                                <circle cx="60" cy="60" r="50" stroke-dasharray="4 4" />
+                            </g>
+                            <path d="M42 48 L58 34 L78 36 L62 60 L78 84" stroke="#000" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" fill="none" opacity="0.8"/>
+                            <circle cx="42" cy="48" r="4" fill="#000"/>
+                            <circle cx="78" cy="36" r="4" fill="#000"/>
+                            <circle cx="78" cy="84" r="4" fill="#000"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl md:text-5xl font-black tracking-widest text-white glitch-hover">NEXA</h1>
+                        <p class="text-[10px] md:text-xs text-cyan-300 tracking-[0.2em] uppercase font-bold">Neural External Agent</p>
+                    </div>
+                </div>
+
+                <!-- Main Text -->
+                <div class="space-y-3 md:space-y-4 fade-in-up delay-100">
+                    <h2 class="text-2xl md:text-4xl font-bold leading-tight">
+                        The Future of <br>
+                        <span class="text-gradient">Information Retrieval</span>
+                    </h2>
+                    <p class="text-gray-400 text-base md:text-lg leading-relaxed max-w-lg">
+                        NEXA is not just a chatbot. It is an independent retrieval engine that synthesizes live web data to provide source-backed, hallucination-free answers.
+                    </p>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex flex-col sm:flex-row gap-4 mt-2 fade-in-up delay-200">
+                    <button id="open-nexa" class="btn-glow flex items-center justify-center gap-2 bg-gradient-to-r from-teal-400 to-blue-600 text-black px-6 md:px-8 py-3 md:py-4 rounded-xl font-bold text-base md:text-lg shadow-lg shadow-teal-500/20 w-full sm:w-auto">
+                        <i data-lucide="zap" class="w-5 h-5"></i>
+                        Launch NEXA
+                    </button>
+                    <button id="learn-more" class="flex items-center justify-center gap-2 px-6 md:px-8 py-3 md:py-4 rounded-xl font-semibold border border-white/10 hover:bg-white/5 transition-all text-gray-300 hover:text-white w-full sm:w-auto">
+                        <i data-lucide="book-open" class="w-5 h-5"></i>
+                        Documentation
+                    </button>
+                </div>
+
+                <!-- Footer Meta -->
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-[10px] md:text-xs text-gray-500 mt-6 md:mt-8 fade-in-up delay-300 border-t border-white/5 pt-4">
+                    <span class="flex items-center gap-1"><i data-lucide="shield-check" class="w-3 h-3"></i> Privacy First</span>
+                    <span class="flex items-center gap-1"><i data-lucide="globe" class="w-3 h-3"></i> Real-time Web</span>
+                    <span class="flex items-center gap-1"><i data-lucide="cpu" class="w-3 h-3"></i> Independent Core</span>
+                </div>
+            </div>
+
+            <!-- Right Column: Features Grid -->
+            <div class="relative z-10 fade-in-up delay-200">
+                <div class="grid grid-cols-1 gap-4">
+                    <!-- Feature 1 -->
+                    <div class="group bg-white/5 hover:bg-white/10 border border-white/5 p-4 md:p-5 rounded-2xl transition-all duration-300 hover:scale-[1.02] cursor-default">
+                        <div class="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-teal-400/20 flex items-center justify-center text-teal-400 mb-3 group-hover:bg-teal-400 group-hover:text-black transition-colors">
+                            <i data-lucide="globe-2" class="w-5 h-5 md:w-6 md:h-6"></i>
+                        </div>
+                        <h3 class="text-base md:text-lg font-bold mb-1 text-white">Internet Enabled</h3>
+                        <p class="text-xs md:text-sm text-gray-400">Retrieves and synthesizes public information in real-time. It knows what happened 5 seconds ago.</p>
+                    </div>
+
+                    <!-- Feature 2 -->
+                    <div class="group bg-white/5 hover:bg-white/10 border border-white/5 p-4 md:p-5 rounded-2xl transition-all duration-300 hover:scale-[1.02] cursor-default">
+                        <div class="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-blue-500/20 flex items-center justify-center text-blue-400 mb-3 group-hover:bg-blue-500 group-hover:text-black transition-colors">
+                            <i data-lucide="cpu" class="w-5 h-5 md:w-6 md:h-6"></i>
+                        </div>
+                        <h3 class="text-base md:text-lg font-bold mb-1 text-white">Independent Engine</h3>
+                        <p class="text-xs md:text-sm text-gray-400">Does not proxy OpenAI or Anthropic APIs. Uses custom retrieval and reasoning modules.</p>
+                    </div>
+
+                    <!-- Feature 3 -->
+                    <div class="group bg-white/5 hover:bg-white/10 border border-white/5 p-4 md:p-5 rounded-2xl transition-all duration-300 hover:scale-[1.02] cursor-default">
+                        <div class="w-9 h-9 md:w-10 md:h-10 rounded-lg bg-purple-500/20 flex items-center justify-center text-purple-400 mb-3 group-hover:bg-purple-500 group-hover:text-black transition-colors">
+                            <i data-lucide="file-check" class="w-5 h-5 md:w-6 md:h-6"></i>
+                        </div>
+                        <h3 class="text-base md:text-lg font-bold mb-1 text-white">Source Backed</h3>
+                        <p class="text-xs md:text-sm text-gray-400">Every answer comes with citations. Good for research, study, and fact-checking.</p>
+                    </div>
+                </div>
+            </div>
         </div>
+        
+        <footer class="text-center mt-6 md:mt-8 text-white/20 text-[10px] md:text-xs font-mono">
+            SYSTEM_STATUS: ONLINE &bull; VERSION: 2.0.4 &bull; DEV: ABHINASH
+        </footer>
+    </main>
 
-        <div class="features" aria-hidden="false">
-          <div class="feature"><strong>Internet-enabled:</strong> Retrieves and summarizes public information from the web in real time.</div>
-          <div class="feature"><strong>Independent engine:</strong> NEXA does <em>not</em> call external large-language-model APIs — it uses its own internal retrieval and reasoning modules.</div>
-          <div class="feature"><strong>Concise answers:</strong> Focused, source-backed responses for study, research, and quick insights.</div>
-          <div class="feature"><strong>Privacy-aware:</strong> Designed to avoid unnecessary data sharing; logs and behavior depend on your implementation choices.</div>
-        </div>
-      </div>
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
 
-      <aside class="cta" aria-label="Get started">
-        <div style="background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent); padding:18px; border-radius:12px;">
-          <h2 style="margin:0 0 8px 0;">Start with NEXA</h2>
-          <p class="meta">Click below to open the NEXA interface (Nexa.html). The AI uses internet retrieval to answer questions and does not rely on third-party AI model APIs.</p>
-          <div style="margin-top:14px;display:flex;gap:10px;">
-            <button class="btn" id="open-nexa">Open NEXA</button>
-            <button class="btn secondary" id="learn-more">Documentation</button>
-          </div>
-        </div>
-
-        <div style="text-align:center;color:var(--muted);font-size:13px;margin-top:8px;">Repo: <strong>Public</strong> — save <code>nexa-logo.svg</code> at repo root for favicon</div>
-      </aside>
-    </section>
-  </main>
-
-  <footer>© NEXA • Built for information discovery</footer>
-
-  <script>
-    // Navigation: button sends user to Nexa.html (case-sensitive)
-    document.getElementById('open-nexa').addEventListener('click', function(){
-      window.location.href = 'Nexa.html';
-    });
-    document.getElementById('learn-more').addEventListener('click', function(){
-      // quick placeholder - swap this URL with your actual docs later
-      window.open('README.md', '_blank');
-    });
-
-    // ---------- Animated background canvas ----------
-    const canvas = document.getElementById('bg-canvas');
-    const ctx = canvas.getContext('2d');
-    let w = canvas.width = innerWidth;
-    let h = canvas.height = innerHeight;
-
-    window.addEventListener('resize', ()=>{ w = canvas.width = innerWidth; h = canvas.height = innerHeight; init(); });
-
-    // nodes around center
-    let nodes = [];
-    function init(){
-      nodes = [];
-      const cx = w/2, cy = h/2;
-      const count = Math.max(8, Math.floor(Math.min(w,h)/90));
-      for(let i=0;i<count;i++){
-        const a = (i/count) * Math.PI * 2;
-        const r = Math.min(w,h)*0.18 + (Math.random()*40-20);
-        nodes.push({
-          x: cx + Math.cos(a)*r,
-          y: cy + Math.sin(a)*r,
-          ox: cx + Math.cos(a)*r,
-          oy: cy + Math.sin(a)*r,
-          phase: Math.random()*Math.PI*2,
-          speed: 0.002 + Math.random()*0.004,
-          size: 2 + Math.random()*4
+        // --- BUTTON LOGIC ---
+        document.getElementById('open-nexa').addEventListener('click', function() {
+            this.innerHTML = '<i class="animate-spin w-5 h-5 mr-2" data-lucide="loader"></i> Initializing...';
+            lucide.createIcons();
+            setTimeout(() => {
+                window.location.href = 'Nexa.html';
+            }, 800);
         });
-      }
-    }
-    init();
 
-    let last = 0;
-    function draw(t){
-      const dt = t-last; last=t;
-      ctx.clearRect(0,0,w,h);
-      // gradient background
-      const g = ctx.createLinearGradient(0,0,w,h);
-      g.addColorStop(0,'rgba(2,6,23,0.95)');
-      g.addColorStop(1,'rgba(7,7,16,0.95)');
-      ctx.fillStyle = g;
-      ctx.fillRect(0,0,w,h);
+        // --- DOCUMENTATION BUTTON LOGIC (ABHINASH EDITION) ---
+        document.getElementById('learn-more').addEventListener('click', function() {
+            const newWindow = window.open('', '_blank');
+            if (newWindow) {
+                const docContent = `
+                    <!DOCTYPE html>
+                    <html lang="en">
+                    <head>
+                        <meta charset="UTF-8">
+                        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                        <title>NEXA | Documentation & Specifications</title>
+                        <script src="https://cdn.tailwindcss.com"><\/script>
+                        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Orbitron:wght@400;500;700;900&display=swap" rel="stylesheet">
+                        <style>
+                             body { background-color: #050508; color: #e2e8f0; font-family: 'Inter', sans-serif; overflow-x: hidden; }
+                             h1, h2, h3, .brand { font-family: 'Orbitron', sans-serif; }
+                             .glass { background: rgba(30, 41, 59, 0.4); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
+                             .text-gradient { background: linear-gradient(135deg, #00FFC6, #4C9AFF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+                             .border-gradient { border-left: 4px solid #00FFC6; }
+                             ::-webkit-scrollbar { width: 8px; }
+                             ::-webkit-scrollbar-track { background: #0f172a; }
+                             ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+                        </style>
+                    </head>
+                    <body class="p-6 md:p-12 lg:p-20 selection:bg-cyan-500 selection:text-black">
+                        <div class="max-w-5xl mx-auto">
+                            <!-- Header -->
+                            <header class="mb-12 md:mb-16 border-b border-gray-800 pb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+                                <div>
+                                    <div class="text-[10px] md:text-xs font-bold text-cyan-400 tracking-[0.3em] uppercase mb-2">Technical Documentation</div>
+                                    <h1 class="text-4xl md:text-6xl font-black text-white mb-2">NEXA <span class="text-gradient">AI</span></h1>
+                                    <p class="text-base md:text-xl text-gray-400 max-w-2xl">Advanced Neural External Agent Architecture</p>
+                                </div>
+                                <div class="text-left md:text-right">
+                                    <div class="text-[10px] md:text-sm text-gray-500 uppercase tracking-widest">Lead Developer</div>
+                                    <div class="text-xl md:text-2xl font-bold text-white brand">ABHINASH</div>
+                                    <div class="text-[10px] md:text-xs text-cyan-500 mt-1">v2.0.4 Stable Build</div>
+                                </div>
+                            </header>
+                            
+                            <!-- Main Content -->
+                            <main class="grid grid-cols-1 md:grid-cols-12 gap-8 md:gap-12">
+                                <!-- Sidebar -->
+                                <aside class="md:col-span-3 hidden md:block sticky top-8 h-fit">
+                                    <div class="glass rounded-xl p-6 space-y-4 text-sm text-gray-400">
+                                        <div class="font-bold text-white uppercase tracking-wider mb-2">Contents</div>
+                                        <div class="hover:text-cyan-400 cursor-pointer transition">1. System Overview</div>
+                                        <div class="hover:text-cyan-400 cursor-pointer transition">2. Core Architecture</div>
+                                        <div class="hover:text-cyan-400 cursor-pointer transition">3. Developer Vision</div>
+                                        <div class="hover:text-cyan-400 cursor-pointer transition">4. Future Roadmap</div>
+                                    </div>
+                                </aside>
 
-      // center glow
-      const cx = w/2, cy = h/2;
-      const grd = ctx.createRadialGradient(cx,cy,10,cx,cy,Math.min(w,h)*0.25);
-      grd.addColorStop(0,'rgba(0,255,198,0.14)');
-      grd.addColorStop(0.4,'rgba(76,154,255,0.06)');
-      grd.addColorStop(1,'rgba(2,6,23,0)');
-      ctx.fillStyle = grd;
-      ctx.beginPath(); ctx.arc(cx,cy,Math.min(w,h)*0.25,0,Math.PI*2); ctx.fill();
+                                <!-- Body -->
+                                <article class="md:col-span-9 space-y-10 md:space-y-16">
+                                    <section>
+                                        <h2 class="text-2xl md:text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                                            <span class="text-cyan-400">01.</span> System Overview
+                                        </h2>
+                                        <div class="glass p-6 md:p-8 rounded-2xl space-y-4">
+                                            <p class="text-sm md:text-base leading-relaxed text-gray-300">
+                                                <strong>NEXA (Neural External Agent)</strong> is a dynamic real-time synthesis engine developed by <strong>Abhinash</strong>. It acts as a bridge between the vast internet and actionable intelligence, focusing on speed and accuracy.
+                                            </p>
+                                        </div>
+                                    </section>
 
-      // draw connections
-      ctx.lineWidth = 1;
-      for(let n of nodes){
-        // slight orbit motion
-        n.phase += n.speed * dt;
-        const rad = Math.hypot(n.ox-cx, n.oy-cy);
-        const ang = Math.atan2(n.oy-cy, n.ox-cx) + Math.sin(n.phase)*0.04;
-        n.x = cx + Math.cos(ang)*(rad + Math.sin(n.phase*1.2)*6);
-        n.y = cy + Math.sin(ang)*(rad + Math.cos(n.phase*1.1)*6);
+                                    <section>
+                                        <h2 class="text-2xl md:text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                                            <span class="text-blue-400">02.</span> Core Architecture
+                                        </h2>
+                                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-6">
+                                            <div class="glass p-5 md:p-6 rounded-xl border-gradient">
+                                                <h3 class="text-lg font-bold text-white mb-2">Live Synthesis</h3>
+                                                <p class="text-xs md:text-sm text-gray-400">Scans live web indices to provide real-time facts without the lag of training cycles.</p>
+                                            </div>
+                                            <div class="glass p-5 md:p-6 rounded-xl border-gradient" style="border-color: #4C9AFF;">
+                                                <h3 class="text-lg font-bold text-white mb-2">Accuracy Protocol</h3>
+                                                <p class="text-xs md:text-sm text-gray-400">Engineered to eliminate hallucinations by cross-verifying all data points before output.</p>
+                                            </div>
+                                        </div>
+                                    </section>
 
-        // line to center
-        ctx.beginPath();
-        ctx.moveTo(cx,cy);
-        ctx.lineTo(n.x,n.y);
-        ctx.strokeStyle = 'rgba(76,154,255,0.06)';
-        ctx.stroke();
-      }
+                                    <section>
+                                        <h2 class="text-2xl md:text-3xl font-bold text-white mb-6 flex items-center gap-3">
+                                            <span class="text-purple-400">03.</span> Developer Vision
+                                        </h2>
+                                        <div class="glass p-6 md:p-8 rounded-2xl relative overflow-hidden">
+                                            <blockquote class="relative z-10 italic text-base md:text-xl text-gray-300 mb-6 font-light">
+                                                "NEXA is designed to be a digital extension of the human mind, operating at the speed of the web. Developed to simplify how we interact with data."
+                                            </blockquote>
+                                            <footer class="flex items-center gap-4">
+                                                <div class="w-10 h-10 md:w-12 md:h-12 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-full flex items-center justify-center text-black font-bold text-lg">A</div>
+                                                <div>
+                                                    <div class="text-white font-bold brand text-sm md:text-base">Abhinash</div>
+                                                    <div class="text-[10px] md:text-xs text-cyan-400">Lead Architect</div>
+                                                </div>
+                                            </footer>
+                                        </div>
+                                    </section>
+                                </article>
+                            </main>
+                            
+                            <footer class="mt-16 border-t border-gray-800 pt-8 text-center">
+                                <p class="text-gray-500 text-xs md:text-sm">&copy; 2025 NEXA Systems. Designed by <span class="text-cyan-400">Abhinash</span>.</p>
+                            </footer>
+                        </div>
+                    </body>
+                    </html>
+                `;
+                newWindow.document.write(docContent);
+                newWindow.document.close();
+            }
+        });
 
-      // nodes
-      for(let n of nodes){
-        const s = n.size + (Math.sin(n.phase*2)+1)*0.8;
-        ctx.beginPath(); ctx.arc(n.x,n.y,s,0,Math.PI*2);
-        ctx.fillStyle = 'rgba(76,154,255,0.9)'; ctx.fill();
-        ctx.beginPath(); ctx.arc(n.x,n.y,Math.max(1,s*0.6),0,Math.PI*2);
-        ctx.fillStyle = 'rgba(0,255,198,0.7)'; ctx.fill();
-      }
+        // --- ANIMATION LOGIC ---
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height;
+        let mouse = { x: null, y: null, radius: 100 }; // Radius reduced for better mobile performance
 
-      // subtle central pulse
-      ctx.beginPath(); ctx.arc(cx,cy,12 + Math.sin(t*0.002)*6,0,Math.PI*2);
-      ctx.fillStyle = 'rgba(0,255,198,0.12)'; ctx.fill();
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
 
-      requestAnimationFrame(draw);
-    }
-    requestAnimationFrame(draw);
-  </script>
+        // Touch support for mobile canvas interaction
+        window.addEventListener('touchmove', (e) => {
+            mouse.x = e.touches[0].clientX;
+            mouse.y = e.touches[0].clientY;
+        });
+
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initParticles();
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * height;
+                this.vx = (Math.random() - 0.5) * 0.4;
+                this.vy = (Math.random() - 0.5) * 0.4;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.baseColor = Math.random() > 0.5 ? '#00FFC6' : '#4C9AFF';
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = this.baseColor;
+                ctx.fill();
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if (this.x < 0 || this.x > width) this.vx *= -1;
+                if (this.y < 0 || this.y > height) this.vy *= -1;
+                this.draw();
+            }
+        }
+
+        let particlesArray = [];
+        function initParticles() {
+            particlesArray = [];
+            // Less particles on smaller screens for performance
+            let density = width < 768 ? 25000 : 15000;
+            let numberOfParticles = (width * height) / density;
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animate() {
+            requestAnimationFrame(animate);
+            ctx.clearRect(0, 0, width, height);
+            
+            let gradient = ctx.createLinearGradient(0, 0, width, height);
+            gradient.addColorStop(0, '#020617');
+            gradient.addColorStop(1, '#0f172a');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, width, height);
+
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+            }
+            connect();
+        }
+
+        function connect() {
+            for (let a = 0; a < particlesArray.length; a++) {
+                for (let b = a; b < particlesArray.length; b++) {
+                    let distance = ((particlesArray[a].x - particlesArray[b].x) ** 2) +
+                                   ((particlesArray[a].y - particlesArray[b].y) ** 2);
+                    
+                    let limit = width < 768 ? 8000 : 15000;
+                    if (distance < limit) {
+                        let opacity = 1 - (distance / limit);
+                        ctx.strokeStyle = `rgba(76, 154, 255, ${opacity * 0.1})`;
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(particlesArray[a].x, particlesArray[a].y);
+                        ctx.lineTo(particlesArray[b].x, particlesArray[b].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        animate();
+    </script>
 </body>
 </html>
