@@ -26,7 +26,7 @@ bot.on("message", async (msg) => {
   try {
 
     // Waiting message bhejo aur uska id store karo
-    const waitingMsg = await bot.sendMessage(chatId, "Think...");
+    const waitingMsg = await bot.sendMessage(chatId, "Soch raha hoon 🤔...");
 
     const response = await axios.post(
       "https://router.huggingface.co/v1/chat/completions",
@@ -62,4 +62,3 @@ bot.on("message", async (msg) => {
   }
 
 });
-
